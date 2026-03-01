@@ -43,7 +43,7 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
           title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? "🌙" : "☀️"}
         </button>
 
         {/* GitHub link (desktop only) */}
