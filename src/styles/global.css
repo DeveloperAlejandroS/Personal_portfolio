@@ -5,25 +5,79 @@
   padding: 0;
 }
 
+/* ─── DARK THEME (default) ──────────────────────────────── */
 :root {
   --bg-base:        #0d0d14;
   --bg-card:        rgba(255, 255, 255, 0.03);
+  --bg-nav:         rgba(13, 13, 20, 0.85);
   --border:         rgba(139, 92, 246, 0.2);
   --border-hover:   rgba(139, 92, 246, 0.5);
-  --purple-deep:    #6d28d9;
-  --purple-mid:     #7c3aed;
-  --purple-bright:  #a855f7;
-  --purple-light:   #c4b5fd;
-  --purple-pale:    #ddd6fe;
+
+  --accent-deep:    #6d28d9;
+  --accent-mid:     #7c3aed;
+  --accent-bright:  #a855f7;
+  --accent-light:   #c4b5fd;
+  --accent-pale:    #ddd6fe;
+
+  --gradient-text:  linear-gradient(135deg, #a855f7, #c084fc, #e879f9);
+  --gradient-btn:   linear-gradient(135deg, #6d28d9, #9333ea);
+  --btn-ghost-bg:   rgba(109, 40, 217, 0.15);
+  --btn-ghost-border: rgba(139, 92, 246, 0.4);
+  --btn-ghost-color: #c4b5fd;
+
+  --tag-bg:         rgba(109, 40, 217, 0.2);
+  --tag-border:     rgba(139, 92, 246, 0.3);
+  --tag-color:      #c4b5fd;
+
   --text-primary:   #e2d9f3;
   --text-secondary: #9ca3af;
   --text-muted:     #6b7280;
   --text-dim:       #4b5563;
-  --font-sans:      'Outfit', 'Segoe UI', sans-serif;
-  --font-mono:      'Fira Code', monospace;
-  --radius-sm:      6px;
-  --radius-md:      12px;
-  --radius-lg:      16px;
+
+  --scrollbar-thumb: #6d28d9;
+
+  --font-sans:  'Outfit', 'Segoe UI', sans-serif;
+  --font-mono:  'Fira Code', monospace;
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+}
+
+/* ─── LIGHT THEME ───────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:        #f0fdfa;
+  --bg-card:        rgba(255, 255, 255, 0.75);
+  --bg-nav:         rgba(240, 253, 250, 0.92);
+  --border:         rgba(13, 148, 136, 0.2);
+  --border-hover:   rgba(13, 148, 136, 0.55);
+
+  --accent-deep:    #0f766e;
+  --accent-mid:     #0d9488;
+  --accent-bright:  #14b8a6;
+  --accent-light:   #2dd4bf;
+  --accent-pale:    #99f6e4;
+
+  --gradient-text:  linear-gradient(135deg, #0d9488, #14b8a6, #06b6d4);
+  --gradient-btn:   linear-gradient(135deg, #0f766e, #0d9488);
+  --btn-ghost-bg:   rgba(13, 148, 136, 0.1);
+  --btn-ghost-border: rgba(13, 148, 136, 0.4);
+  --btn-ghost-color: #0f766e;
+
+  --tag-bg:         rgba(13, 148, 136, 0.1);
+  --tag-border:     rgba(13, 148, 136, 0.3);
+  --tag-color:      #0f766e;
+
+  --text-primary:   #134e4a;
+  --text-secondary: #374151;
+  --text-muted:     #4b5563;
+  --text-dim:       #9ca3af;
+
+  --scrollbar-thumb: #0d9488;
+}
+
+/* ─── Smooth theme transition ───────────────────────────── */
+*, *::before, *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 html { scroll-behavior: smooth; }
@@ -39,41 +93,41 @@ body {
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar        { width: 6px; }
 ::-webkit-scrollbar-track  { background: var(--bg-base); }
-::-webkit-scrollbar-thumb  { background: var(--purple-deep); border-radius: 3px; }
+::-webkit-scrollbar-thumb  { background: var(--scrollbar-thumb); border-radius: 3px; }
 
-/* ─── Utility classes ───────────────────────────────────── */
+/* ─── gradient text ─────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #a855f7, #c084fc, #e879f9);
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+/* ─── glass card ────────────────────────────────────────── */
 .glass-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(12px);
-  transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
 .glass-card:hover {
   border-color: var(--border-hover);
-  background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
 }
 
+/* ─── tag pill ──────────────────────────────────────────── */
 .tag {
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  background: rgba(109, 40, 217, 0.2);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: var(--purple-light);
+  background: var(--tag-bg);
+  border: 1px solid var(--tag-border);
+  color: var(--tag-color);
   padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
 }
 
-/* ─── Section entrance animation ───────────────────────── */
+/* ─── Section animation ─────────────────────────────────── */
 .section-enter {
   animation: fadeUp 0.5s ease forwards;
 }
@@ -82,7 +136,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Spin (used in loader) ─────────────────────────────── */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
