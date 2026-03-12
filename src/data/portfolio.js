@@ -22,8 +22,8 @@ export const EDUCATION = [
   },
   {
     school: "Universidad ECCI",
-    degree: "Technology in Computer Development",
-    period: "Aug 2022 – Mar 2026",
+    degree: "Technology in Software Development",
+    period: "Aug 2023 – Mar 2026",
   },
   {
     school: "Instituto Infantil y Juvenil",
