@@ -3,7 +3,9 @@
 //  ✏️  Edit this file to update your portfolio content.
 // ─────────────────────────────────────────────────────────
 
-export const GITHUB_USER = "DeveloperAlejandroS";
+export const GITHUB_USER =
+  (typeof import.meta.env.VITE_GITHUB_USER === 'string' && import.meta.env.VITE_GITHUB_USER.trim())
+  || "DeveloperAlejandroS";
 
 export const PROFILE = {
   name: "Alejandro Sierra Vargas",

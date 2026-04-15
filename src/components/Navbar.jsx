@@ -13,79 +13,83 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
   };
 
   return (
-    <nav className={styles.nav}>
-      {/* Logo */}
-      <span className={styles.logo}>
-        <span className={styles.bracket}>&lt;</span>
-        AlejandroS
-        <span className={styles.bracket}>/&gt;</span>
-      </span>
+    <nav className={styles.nav} role="navigation" aria-label="Main navigation">
+      <div className={styles.pill}>
+        {/* Left section - Logo */}
+        <div className={styles.section}>
+          <span className={styles.logo} title="Portfolio">
+            <span className={styles.bracket}>&lt;</span>
+            Alejandro <span className={styles.lastName}>Sierra</span>
+            <span className={styles.bracket}>/&gt;</span>
+          </span>
+        </div>
 
-      {/* Desktop links */}
-      <div className={styles.links}>
-        {NAV_LINKS.map((link) => (
-          <button
-            key={link}
-            className={`${styles.link} ${active === link ? styles.active : ""}`}
-            onClick={() => handleNavigate(link)}
-          >
-            {link}
-          </button>
-        ))}
-      </div>
-
-      {/* Right controls */}
-      <div className={styles.rightControls}>
-        {/* Theme toggle */}
-        <button
-          className={styles.themeBtn}
-          onClick={onToggleTheme}
-          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          aria-label="Toggle theme"
-        >
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button>
-
-        {/* GitHub link (desktop only) */}
-        <a
-          href={`https://github.com/${githubUser}`}
-          target="_blank"
-          rel="noreferrer"
-          className={styles.ghBtn}
-        >
-          GitHub ↗
-        </a>
-
-        {/* Hamburger (mobile only) */}
-        <button
-          className={styles.hamburger}
-          onClick={() => setMenuOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? "✕" : "☰"}
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      {menuOpen && (
-        <div className={styles.drawer}>
+        {/* Center section - Desktop nav links */}
+        <div className={styles.links}>
           {NAV_LINKS.map((link) => (
             <button
               key={link}
-              className={`${styles.drawerLink} ${active === link ? styles.drawerActive : ""}`}
+              className={`${styles.link} ${active === link ? styles.active : ""}`}
               onClick={() => handleNavigate(link)}
+              type="button"
+              aria-current={active === link ? "page" : undefined}
             >
               {link}
             </button>
           ))}
-          <a
-            href={`https://github.com/${githubUser}`}
-            target="_blank"
-            rel="noreferrer"
-            className={styles.drawerGh}
+        </div>
+
+        {/* Right section - Controls */}
+        <div className={styles.rightControls}>
+          {/* Theme toggle */}
+          <button
+            className={styles.themeBtn}
+            onClick={onToggleTheme}
+            type="button"
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label="Toggle theme"
           >
-            GitHub ↗
-          </a>
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
+
+          {/* Hamburger (mobile only) */}
+          <button
+            className={styles.hamburger}
+            onClick={() => setMenuOpen((o) => !o)}
+            type="button"
+            aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile drawer - appears below pill */}
+      {menuOpen && (
+        <div className={styles.drawer}>
+          <div className={styles.drawerContent}>
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link}
+                className={`${styles.drawerLink} ${active === link ? styles.drawerActive : ""}`}
+                onClick={() => handleNavigate(link)}
+                type="button"
+                aria-current={active === link ? "page" : undefined}
+              >
+                {link}
+              </button>
+            ))}
+            <a
+              href={`https://github.com/${githubUser}`}
+              target="_blank"
+              rel="noreferrer noopener"
+              className={styles.drawerGh}
+              aria-label={`Visit GitHub profile (opens in new window)`}
+            >
+              GitHub ↗
+            </a>
+          </div>
         </div>
       )}
     </nav>

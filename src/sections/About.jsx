@@ -55,7 +55,7 @@ export default function About({ githubProfile }) {
             </p>
             <h1 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontWeight: 800, lineHeight: 1.1 }}>
               {PROFILE.name.split(' ')[0]}{' '}
-              <span className="gradient-text">
+              <span className="scream-gradient">
                 {PROFILE.name.split(' ').slice(1).join(' ')}
               </span>
             </h1>

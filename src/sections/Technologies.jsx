@@ -1,7 +1,7 @@
 // sections/Technologies.jsx
-// Real language data fetched from GitHub, with fallback to manual SKILLS
+// Real language data fetched from GitHub
 import { useState, useEffect } from 'react';
-import { SKILLS, LANG_COLORS } from '../data/portfolio';
+import { LANG_COLORS } from '../data/portfolio';
 
 const LANG_ICONS = {
   Python: '🐍', JavaScript: '⚡', TypeScript: '🔷', HTML: '🌐', CSS: '🎨',
@@ -17,8 +17,8 @@ export default function Technologies({ githubLangs }) {
     return () => clearTimeout(t);
   }, []);
 
-  // Build skill list from real GitHub data if available, else fallback
-  const realSkills = githubLangs
+  // Build skill list from real GitHub data
+  const displaySkills = githubLangs
     ? githubLangs.map(({ lang, pct }) => ({
         name: lang,
         icon: LANG_ICONS[lang] || LANG_ICONS.default,
@@ -26,9 +26,6 @@ export default function Technologies({ githubLangs }) {
         color: LANG_COLORS[lang] || LANG_COLORS.default,
       }))
     : null;
-
-  const manualSkills = Object.values(SKILLS).flat();
-  const displaySkills = realSkills || manualSkills;
 
   return (
     <div className="section-enter">
@@ -47,8 +44,8 @@ export default function Technologies({ githubLangs }) {
       </p>
 
       {/* ── Language bars ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginBottom: 40 }}>
-        {githubLangs ? (
+      {displaySkills && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginBottom: 40 }}>
           <div className="glass-card" style={{ padding: 28, gridColumn: '1 / -1' }}>
             <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 24 }}>
               LANGUAGES BY CODE VOLUME
@@ -59,19 +56,8 @@ export default function Technologies({ githubLangs }) {
               ))}
             </div>
           </div>
-        ) : (
-          Object.entries(SKILLS).map(([cat, skills]) => (
-            <div key={cat} className="glass-card" style={{ padding: 26 }}>
-              <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.1em', marginBottom: 20 }}>
-                {cat.toUpperCase()}
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {skills.map((s) => <SkillBar key={s.name} skill={s} animated={animated} />)}
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ── Stacked language bar ── */}
       {githubLangs && (
