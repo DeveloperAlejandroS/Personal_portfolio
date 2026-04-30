@@ -1,16 +1,50 @@
 // components/Navbar.jsx
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = ["About", "Experience", "Technologies", "Projects"];
 
 export default function Navbar({ active, onNavigate, githubUser, theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const hamburgerRef = useRef(null);
+  const drawerRef = useRef(null);
 
   const handleNavigate = (link) => {
     onNavigate(link);
     setMenuOpen(false);
   };
+
+  useEffect(() => {
+    if (!menuOpen) {
+      hamburgerRef.current?.focus();
+      return;
+    }
+
+    const focusables = drawerRef.current?.querySelectorAll('button, a') || [];
+    focusables[0]?.focus();
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab' || focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [menuOpen]);
 
   return (
     <nav className={styles.nav} role="navigation" aria-label="Main navigation">
@@ -54,11 +88,13 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
 
           {/* Hamburger (mobile only) */}
           <button
+            ref={hamburgerRef}
             className={styles.hamburger}
             onClick={() => setMenuOpen((o) => !o)}
             type="button"
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav-drawer"
           >
             {menuOpen ? "✕" : "☰"}
           </button>
@@ -67,7 +103,7 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
 
       {/* Mobile drawer - appears below pill */}
       {menuOpen && (
-        <div className={styles.drawer}>
+        <div ref={drawerRef} className={styles.drawer} id="mobile-nav-drawer" aria-label="Mobile navigation">
           <div className={styles.drawerContent}>
             {NAV_LINKS.map((link) => (
               <button

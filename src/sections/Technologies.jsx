@@ -19,7 +19,9 @@ export default function Technologies({ githubLangs }) {
 
   // Build skill list from real GitHub data
   const displaySkills = githubLangs
-    ? githubLangs.map(({ lang, pct }) => ({
+    ? githubLangs
+      .filter(({ pct }) => Number(pct) > 0)
+      .map(({ lang, pct }) => ({
         name: lang,
         icon: LANG_ICONS[lang] || LANG_ICONS.default,
         level: pct,
@@ -44,7 +46,7 @@ export default function Technologies({ githubLangs }) {
       </p>
 
       {/* ── Language bars ── */}
-      {displaySkills && (
+      {displaySkills && displaySkills.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginBottom: 40 }}>
           <div className="glass-card" style={{ padding: 28, gridColumn: '1 / -1' }}>
             <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 24 }}>
@@ -60,7 +62,7 @@ export default function Technologies({ githubLangs }) {
       )}
 
       {/* ── Stacked language bar ── */}
-      {githubLangs && (
+      {githubLangs && displaySkills && displaySkills.length > 0 && (
         <>
           <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 14 }}>
             LANGUAGE DISTRIBUTION

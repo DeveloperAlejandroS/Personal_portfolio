@@ -17,6 +17,7 @@ export default function App() {
   const [active, setActive] = useState('About');
   const [theme,  setTheme]  = useState('dark');
   const [transitionDirection, setTransitionDirection] = useState('forward');
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const previousSectionRef = useRef(active);
 
   // Github data shared across sections
@@ -40,6 +41,16 @@ export default function App() {
       previousSectionRef.current = active;
     }
   }, [active]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setShowScrollTop(window.scrollY > 280);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // ── Fetch GitHub profile + aggregate languages ─────────
   useEffect(() => {
@@ -114,6 +125,10 @@ export default function App() {
     localStorage.setItem('theme', next);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const ActiveSection = SECTIONS[active];
   const sectionProps =
     active === 'About' ? { githubProfile } :
@@ -123,6 +138,10 @@ export default function App() {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido principal
+      </a>
+
       <AnimatedBackground theme={theme} />
 
       <Navbar
@@ -133,11 +152,46 @@ export default function App() {
         onToggleTheme={toggleTheme}
       />
 
-      <main style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', padding: '100px 24px 40px' }}>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        style={{ position: 'relative', zIndex: 1, maxWidth: 'var(--content-max-width)', margin: '0 auto', padding: 'var(--page-top-padding) var(--page-x-padding) var(--page-bottom-padding)' }}
+      >
         <div key={active} className={`section-enter section-slide section-slide-${transitionDirection}`}>
             <ActiveSection {...sectionProps} />
         </div>
       </main>
+
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label="Volver arriba"
+        title="Volver arriba"
+        style={{
+          position: 'fixed',
+          right: 'clamp(14px, 2.2vw, 20px)',
+          bottom: 'calc(16px + env(safe-area-inset-bottom))',
+          zIndex: 12,
+          width: 'clamp(44px, 4.2vw, 48px)',
+          height: 'clamp(44px, 4.2vw, 48px)',
+          borderRadius: '50%',
+          border: '1px solid var(--border)',
+          background: 'var(--gradient-btn)',
+          color: '#fff',
+          cursor: 'pointer',
+          fontSize: '1.15rem',
+          lineHeight: 1,
+          display: 'grid',
+          placeItems: 'center',
+          boxShadow: showScrollTop ? '0 12px 24px rgba(0,0,0,0.28)' : 'none',
+          opacity: showScrollTop ? 1 : 0,
+          transform: showScrollTop ? 'translateY(0)' : 'translateY(8px)',
+          pointerEvents: showScrollTop ? 'auto' : 'none',
+          transition: 'opacity 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease',
+        }}
+      >
+        ↑
+      </button>
 
       <Footer />
     </>
