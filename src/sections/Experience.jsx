@@ -1,5 +1,15 @@
 // sections/Experience.jsx
 import { EXPERIENCE, CERTIFICATIONS } from '../data/portfolio';
+import { CERTIFICATION_ICON_MAP, EXPERIENCE_ICON_MAP } from '../data/iconMaps';
+
+function renderIcon(iconSpec, size) {
+  if (iconSpec?.kind === 'devicon') {
+    return <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: `${size}px`, lineHeight: 1 }} />;
+  }
+
+  const Icon = iconSpec?.icon;
+  return Icon ? <Icon size={size} strokeWidth={2.2} /> : null;
+}
 
 export default function Experience() {
   return (
@@ -68,15 +78,20 @@ function TimelineItem({ job }) {
         </div>
 
         <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
-          {job.bullets.map(({ icon, text }) => (
-            <li key={text} style={{
-              display: "flex", gap: 12, alignItems: "flex-start",
-              color: "var(--text-secondary)", fontSize: "0.88rem", lineHeight: 1.7,
-            }}>
-              <span style={{ flexShrink: 0 }}>{icon}</span>
-              <span>{text}</span>
-            </li>
-          ))}
+          {job.bullets.map(({ iconKey, text }) => {
+            const iconSpec = EXPERIENCE_ICON_MAP[iconKey] || EXPERIENCE_ICON_MAP.default;
+            return (
+              <li key={text} style={{
+                display: "flex", gap: 12, alignItems: "flex-start",
+                color: "var(--text-secondary)", fontSize: "0.88rem", lineHeight: 1.7,
+              }}>
+                <span style={{ flexShrink: 0, display: 'inline-flex', marginTop: 2, color: iconSpec.color || 'inherit' }}>
+                  {renderIcon(iconSpec, 16)}
+                </span>
+                <span>{text}</span>
+              </li>
+            );
+          })}
         </ul>
 
         <div style={{ marginTop: 20, display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -88,9 +103,12 @@ function TimelineItem({ job }) {
 }
 
 function CertCard({ cert }) {
+  const iconSpec = CERTIFICATION_ICON_MAP[cert.iconKey] || CERTIFICATION_ICON_MAP.default;
   return (
     <div className="glass-card" style={{ padding: 20 }}>
-      <div style={{ fontSize: "1.8rem", marginBottom: 8 }}>{cert.icon}</div>
+      <div style={{ marginBottom: 8, display: 'inline-flex', color: iconSpec.color || 'inherit' }}>
+        {renderIcon(iconSpec, 28)}
+      </div>
       <p style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.88rem", marginBottom: 4 }}>{cert.name}</p>
       <p style={{ color: "var(--accent-mid)", fontSize: "0.78rem" }}>{cert.issuer}</p>
       <p style={{ color: "var(--text-dim)", fontSize: "0.74rem", marginTop: 4 }}>{cert.date}</p>

@@ -1,5 +1,6 @@
 // sections/Projects.jsx
 import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, ChevronLeft, ChevronRight, Code2, LoaderCircle, TriangleAlert } from 'lucide-react';
 import { GITHUB_USER, LANG_COLORS } from '../data/portfolio';
 import DesktopProjectModal from '../components/DesktopProjectModal';
 
@@ -119,7 +120,7 @@ export default function Projects({ githubRepos = null, githubReposError = false 
         </h2>
         <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer"
           style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? '0.72rem' : '0.8rem', color: 'var(--accent-mid)', textDecoration: 'none' }}>
-          View all ↗
+          View all <ArrowUpRight size={14} strokeWidth={2.4} style={{ display: 'inline', verticalAlign: 'middle' }} />
         </a>
       </div>
       <p style={{ ...STYLES.section.subtitle, marginBottom: sectionSubtitleMargin, fontSize: isMobile ? '0.74rem' : '0.8rem' }}>
@@ -130,7 +131,7 @@ export default function Projects({ githubRepos = null, githubReposError = false 
       {error   && <ErrorState user={GITHUB_USER} />}
       {!loading && !error && repos.length === 0 && (
         <div className="glass-card" style={{ padding: 40, textAlign: 'center', border: '1px solid var(--border)' }} role="status" aria-label="No repositories found">
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>📭 No public repositories found.</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>No public repositories found.</p>
           <p style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginTop: 12, fontFamily: 'var(--font-mono)' }}>Check back soon or visit GitHub profile directly</p>
         </div>
       )}
@@ -214,7 +215,7 @@ function ProjectSection({ title, description, repos, isDesktop, viewportWidth, o
               aria-label={`Scroll ${title} projects left`}
               style={CAROUSEL_STYLES.button}
             >
-              ←
+              <ChevronLeft size={16} strokeWidth={2.4} />
             </button>
             <button
               type="button"
@@ -222,7 +223,7 @@ function ProjectSection({ title, description, repos, isDesktop, viewportWidth, o
               aria-label={`Scroll ${title} projects right`}
               style={CAROUSEL_STYLES.button}
             >
-              →
+              <ChevronRight size={16} strokeWidth={2.4} />
             </button>
           </div>
         </div>
@@ -358,7 +359,7 @@ function RepoCard({ repo, canOpenModal, onOpenModal }) {
       {/* ── Card body ── */}
       <div style={{ ...STYLES.card.body, padding: bodyPadding }}>
         <div style={STYLES.card.meta}>
-          <span style={{ fontSize: '1rem' }}>📦</span>
+          <i className="devicon-github-original github-icon-themed" aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
         </div>
 
         <h3 style={{ ...STYLES.card.title, fontSize: titleSize }}>
@@ -401,7 +402,8 @@ function RepoCard({ repo, canOpenModal, onOpenModal }) {
             aria-label={`View ${repo.name} source code on GitHub (opens in new window)`}
             title={`View ${repo.name} on GitHub`}
           >
-            &lt;/&gt; Code
+            <Code2 size={14} strokeWidth={2.2} style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'text-bottom' }} />
+            Code
           </a>
           {liveUrl && (
             <a 
@@ -413,7 +415,8 @@ function RepoCard({ repo, canOpenModal, onOpenModal }) {
               aria-label={`Visit ${repo.name} live website (opens in new window)`}
               title={`Visit ${repo.name} live site`}
             >
-              ↗ Live
+              <ArrowUpRight size={14} strokeWidth={2.4} style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'text-bottom' }} />
+              Live
             </a>
           )}
         </div>
@@ -518,7 +521,7 @@ function PreviewSection({ repoName, thumbnailUrl, thumbnailState, onThumbnailLoa
 
       {/* Live badge */}
       <span style={STYLES.card.badge}>
-        ● LIVE
+        LIVE
       </span>
     </div>
   );
@@ -527,8 +530,10 @@ function PreviewSection({ repoName, thumbnailUrl, thumbnailState, onThumbnailLoa
 function Loader() {
   return (
     <div style={STYLES.loader.container} role="status" aria-label="Loading repositories">
-      <div style={STYLES.loader.spinner} aria-hidden="true" />
-      <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>⏳ Loading repositories...</p>
+      <div style={{ ...STYLES.loader.spinner, display: 'grid', placeItems: 'center' }} aria-hidden="true">
+        <LoaderCircle size={22} strokeWidth={2.2} />
+      </div>
+      <p style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>Loading repositories...</p>
       <p style={{ color: 'var(--text-dim)', fontSize: '0.75rem', marginTop: 8, fontFamily: 'var(--font-mono)' }}>This may take a moment</p>
     </div>
   );
@@ -537,13 +542,13 @@ function Loader() {
 function ErrorState({ user }) {
   return (
     <div className="glass-card" style={{ padding: 40, textAlign: 'center', ...STYLES.error.container }} role="alert" aria-label="Failed to load repositories">
-      <p style={STYLES.error.text}>⚠️ Could not load repositories</p>
+      <p style={{ ...STYLES.error.text, display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}><TriangleAlert size={18} strokeWidth={2.2} /> Could not load repositories</p>
       <p style={STYLES.error.subtext}>There was an issue fetching your GitHub projects. This may be due to rate limiting or network issues.</p>
       <a href={`https://github.com/${user}`} target="_blank" rel="noreferrer noopener"
-        style={{ color: 'var(--accent-bright)', textDecoration: 'none', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', display: 'inline-block', marginTop: 16 }} 
+        style={{ color: 'var(--accent-bright)', textDecoration: 'none', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16 }} 
         aria-label={`Visit ${user}'s GitHub profile (opens in new window)`}
       >
-        Visit GitHub profile ↗
+        Visit GitHub profile <ArrowUpRight size={14} strokeWidth={2.4} style={{ display: 'inline', verticalAlign: 'middle' }} />
       </a>
     </div>
   );

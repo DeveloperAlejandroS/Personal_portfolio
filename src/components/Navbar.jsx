@@ -1,5 +1,6 @@
 // components/Navbar.jsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ArrowUpRight, Menu, MoonStar, SunMedium, X } from 'lucide-react';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = ["About", "Experience", "Technologies", "Projects"];
@@ -8,11 +9,41 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
   const [menuOpen, setMenuOpen] = useState(false);
   const hamburgerRef = useRef(null);
   const drawerRef = useRef(null);
+  const linksRef = useRef(null);
+  const linkRefs = useRef({});
+  const [indicatorStyle, setIndicatorStyle] = useState({ transform: 'translateX(0px)', width: '0px', opacity: 0 });
 
   const handleNavigate = (link) => {
     onNavigate(link);
     setMenuOpen(false);
   };
+
+  const syncIndicator = () => {
+    const container = linksRef.current;
+    const activeButton = linkRefs.current[active];
+
+    if (!container || !activeButton) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const buttonRect = activeButton.getBoundingClientRect();
+
+    setIndicatorStyle({
+      transform: `translateX(${buttonRect.left - containerRect.left}px)`,
+      width: `${buttonRect.width}px`,
+      opacity: 1,
+    });
+  };
+
+  useLayoutEffect(() => {
+    syncIndicator();
+  }, [active]);
+
+  useEffect(() => {
+    const onResize = () => syncIndicator();
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [active]);
 
   useEffect(() => {
     if (!menuOpen) {
@@ -59,11 +90,17 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
         </div>
 
         {/* Center section - Desktop nav links */}
-        <div className={styles.links}>
+        <div className={styles.links} ref={linksRef}>
+          <span className={styles.activeIndicator} style={indicatorStyle} aria-hidden="true" />
           {NAV_LINKS.map((link) => (
             <button
               key={link}
               className={`${styles.link} ${active === link ? styles.active : ""}`}
+              ref={(node) => {
+                if (node) {
+                  linkRefs.current[link] = node;
+                }
+              }}
               onClick={() => handleNavigate(link)}
               type="button"
               aria-current={active === link ? "page" : undefined}
@@ -83,7 +120,7 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             aria-label="Toggle theme"
           >
-            {theme === "dark" ? "☀️" : "🌙"}
+            {theme === "dark" ? <SunMedium size={16} strokeWidth={2.4} /> : <MoonStar size={16} strokeWidth={2.4} />}
           </button>
 
           {/* Hamburger (mobile only) */}
@@ -96,7 +133,7 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
             aria-expanded={menuOpen}
             aria-controls="mobile-nav-drawer"
           >
-            {menuOpen ? "✕" : "☰"}
+            {menuOpen ? <X size={18} strokeWidth={2.4} /> : <Menu size={18} strokeWidth={2.4} />}
           </button>
         </div>
       </div>
@@ -123,7 +160,8 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
               className={styles.drawerGh}
               aria-label={`Visit GitHub profile (opens in new window)`}
             >
-              GitHub ↗
+              <span>GitHub</span>
+              <ArrowUpRight size={14} strokeWidth={2.4} />
             </a>
           </div>
         </div>

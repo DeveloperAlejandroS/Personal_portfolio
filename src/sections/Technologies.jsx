@@ -1,14 +1,9 @@
 // sections/Technologies.jsx
 // Real language data fetched from GitHub
 import { useState, useEffect } from 'react';
+import { ChartColumnIncreasing } from 'lucide-react';
 import { LANG_COLORS } from '../data/portfolio';
-
-const LANG_ICONS = {
-  Python: '🐍', JavaScript: '⚡', TypeScript: '🔷', HTML: '🌐', CSS: '🎨',
-  'C#': '🔷', 'C++': '⚙️', Java: '☕', Shell: '🖥️', Vue: '💚',
-  Jupyter: '📓', Dockerfile: '🐳', Ruby: '💎', Go: '🐹', Rust: '🦀',
-  Swift: '🍎', Kotlin: '🟣', Dart: '🎯', PHP: '🐘', default: '💻',
-};
+import { LANGUAGE_ICON_MAP, SKILL_ICON_MAP } from '../data/techIcons';
 
 export default function Technologies({ githubLangs }) {
   const [animated, setAnimated] = useState(false);
@@ -23,7 +18,7 @@ export default function Technologies({ githubLangs }) {
       .filter(({ pct }) => Number(pct) > 0)
       .map(({ lang, pct }) => ({
         name: lang,
-        icon: LANG_ICONS[lang] || LANG_ICONS.default,
+        iconKey: lang,
         level: pct,
         color: LANG_COLORS[lang] || LANG_COLORS.default,
       }))
@@ -36,8 +31,9 @@ export default function Technologies({ githubLangs }) {
           Tech <span className="gradient-text">Stack</span>
         </h2>
         {githubLangs && (
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', background: 'var(--tag-bg)', border: '1px solid var(--border)', padding: '4px 10px', borderRadius: 20 }}>
-            📊 Live from GitHub
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', background: 'var(--tag-bg)', border: '1px solid var(--border)', padding: '4px 10px', borderRadius: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <ChartColumnIncreasing size={14} strokeWidth={2.2} />
+            Live from GitHub
           </span>
         )}
       </div>
@@ -96,11 +92,23 @@ export default function Technologies({ githubLangs }) {
         ALL TECHNOLOGIES
       </h3>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-        {['Python','JavaScript','C#','C++','Java','HTML5','CSS3','React','Express.js','Flask','SQL','Power BI','Excel','Git','Scrum'].map((t) => (
-          <div key={t} className="glass-card" style={{ padding: '8px 16px', borderRadius: 30 }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--accent-light)' }}>{t}</span>
+        {['python','javascript','typescript','react','nextjs','tailwind','html','css','express','flask','sql','git','analytics','excel','workflow'].map((key) => {
+          const iconSpec = SKILL_ICON_MAP[key] || SKILL_ICON_MAP.default;
+          const label = {
+            python: 'Python', javascript: 'JavaScript', typescript: 'TypeScript', react: 'React', nextjs: 'Next.js', tailwind: 'Tailwind CSS',
+            html: 'HTML5', css: 'CSS3', express: 'Express.js', flask: 'Flask', sql: 'SQL', git: 'Git', analytics: 'Power BI', excel: 'Excel', workflow: 'Scrum',
+          }[key] || key;
+          const Icon = iconSpec.kind === 'fallback' ? iconSpec.icon : null;
+          return (
+          <div key={key} className="glass-card" style={{ padding: '8px 16px', borderRadius: 30, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            {iconSpec.kind === 'devicon' ? (
+              <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
+            ) : (
+              <Icon size={14} strokeWidth={2.2} />
+            )}
+            <span style={{ fontSize: '0.82rem', color: 'var(--accent-light)' }}>{label}</span>
           </div>
-        ))}
+        );})}
       </div>
     </div>
   );
@@ -111,12 +119,21 @@ function SkillBar({ skill, animated }) {
     ? skill.color
     : 'linear-gradient(90deg, var(--accent-deep), var(--accent-bright))';
   const isSolid = !!skill.color;
+  const iconSpec = LANGUAGE_ICON_MAP[skill.iconKey] || LANGUAGE_ICON_MAP.default;
+  const Icon = iconSpec.kind === 'fallback' ? iconSpec.icon : null;
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
         <span style={{ display: 'flex', gap: 7, alignItems: 'center', fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-          <span>{skill.icon}</span> {skill.name}
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            {iconSpec.kind === 'devicon' ? (
+              <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
+            ) : (
+              <Icon size={15} strokeWidth={2.2} />
+            )}
+          </span>
+          {skill.name}
         </span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-mid)' }}>
           {skill.level}%

@@ -1,6 +1,17 @@
 // sections/About.jsx
 import { useState, useEffect } from 'react';
+import { ArrowDownToLine, Mail, MapPin, Phone } from 'lucide-react';
 import { PROFILE, EDUCATION, CERTIFICATIONS, GITHUB_USER } from '../data/portfolio';
+import { CERTIFICATION_ICON_MAP } from '../data/iconMaps';
+
+function renderIcon(iconSpec, size) {
+  if (iconSpec?.kind === 'devicon') {
+    return <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: `${size}px`, lineHeight: 1 }} />;
+  }
+
+  const Icon = iconSpec?.icon;
+  return Icon ? <Icon size={size} strokeWidth={2.2} /> : null;
+}
 
 export default function About({ githubProfile }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -71,8 +82,9 @@ export default function About({ githubProfile }) {
 
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
           <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer"
-            style={{ padding: '11px 24px', background: 'var(--gradient-btn)', borderRadius: 8, color: 'white', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem' }}>
-            View GitHub →
+            style={{ padding: '11px 24px', background: 'var(--gradient-btn)', borderRadius: 8, color: 'white', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <i className="devicon-github-original" aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
+            <span>View GitHub</span>
           </a>
           <a href={`mailto:${PROFILE.email}`}
             style={{ padding: '11px 24px', background: 'var(--btn-ghost-bg)', border: '1px solid var(--btn-ghost-border)', borderRadius: 8, color: 'var(--btn-ghost-color)', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem' }}>
@@ -81,7 +93,8 @@ export default function About({ githubProfile }) {
           {/* CV Download */}
           <a href="/cv-alejandro-sierra.pdf" download
             style={{ padding: '11px 24px', background: 'var(--btn-ghost-bg)', border: '1px solid var(--btn-ghost-border)', borderRadius: 8, color: 'var(--btn-ghost-color)', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-            ⬇ Download CV
+            <ArrowDownToLine size={16} strokeWidth={2.3} />
+            <span>Download CV</span>
           </a>
         </div>
 
@@ -107,14 +120,18 @@ export default function About({ githubProfile }) {
         <div className="glass-card" style={{ padding: 22 }}>
           <Label>CONTACT</Label>
           {[
-            { icon: '📧', value: PROFILE.email },
-            { icon: '📱', value: PROFILE.phone },
-            { icon: '📍', value: PROFILE.location },
-          ].map(({ icon, value }) => (
-            <div key={value} style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.87rem', marginBottom: 8 }}>
-              <span>{icon}</span><span style={{ wordBreak: 'break-all' }}>{value}</span>
-            </div>
-          ))}
+            { icon: Mail, value: PROFILE.email },
+            { icon: Phone, value: PROFILE.phone },
+            { icon: MapPin, value: PROFILE.location },
+          ].map(({ icon, value }) => {
+            const Icon = icon;
+            return (
+              <div key={value} style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.87rem', marginBottom: 8 }}>
+                <span style={{ display: 'inline-flex' }}><Icon size={16} strokeWidth={2.2} /></span>
+                <span style={{ wordBreak: 'break-all' }}>{value}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="glass-card" style={{ padding: 22 }}>
@@ -132,7 +149,17 @@ export default function About({ githubProfile }) {
           <Label>CERTIFICATIONS</Label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {CERTIFICATIONS.map((c) => (
-              <span key={c.name} className="tag">{c.icon} {c.name.split(':')[0].split('(')[0].trim()}</span>
+              (() => {
+                const certIcon = CERTIFICATION_ICON_MAP[c.iconKey] || CERTIFICATION_ICON_MAP.default;
+                return (
+                  <span key={c.name} className="tag" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ display: 'inline-flex', color: certIcon.color || 'inherit' }}>
+                      {renderIcon(certIcon, 14)}
+                    </span>
+                    {c.name.split(':')[0].split('(')[0].trim()}
+                  </span>
+                );
+              })()
             ))}
           </div>
         </div>

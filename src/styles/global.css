@@ -36,6 +36,7 @@
   --text-dim:       #6f6b83;
 
   --scrollbar-thumb: #8b5cf6;
+  --github-icon-color: #ffffff;
   --project-card-width: clamp(240px, 24vw, 300px);
 
   --font-sans:  'Outfit', 'Segoe UI', sans-serif;
@@ -84,6 +85,7 @@
   --text-dim:       #9d96bc;
 
   --scrollbar-thumb: #8b5cf6;
+  --github-icon-color: #151518;
 }
 
 @media (max-width: 768px) {
@@ -161,6 +163,18 @@ body::before {
   background-size: 48px 48px;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 90%);
   opacity: 0.55;
+}
+
+i[class^="devicon-"],
+i[class*=" devicon-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.github-icon-themed {
+  color: var(--github-icon-color);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────── */

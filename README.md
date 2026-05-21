@@ -6,6 +6,7 @@ Modern personal portfolio built with Vite and React.
 
 - React 18
 - Vite
+- lucide-react for lightweight UI icons
 - CSS Modules + global CSS
 - GitHub REST API (profile, repositories, language stats)
 
@@ -20,14 +21,14 @@ Modern personal portfolio built with Vite and React.
 ## Requirements
 
 - Node.js 18+
-- npm
+- pnpm
 
 ## Local Setup
 
 1. Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 2. Create a local env file from template:
@@ -45,7 +46,7 @@ Copy-Item .env.example .env
 3. Start development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 4. Open the local URL shown in terminal.
@@ -62,9 +63,9 @@ See .env.example for defaults.
 
 ## Available Scripts
 
-- npm run dev: start dev server
-- npm run build: production build
-- npm run preview: preview production build locally
+- pnpm dev: start dev server
+- pnpm build: production build
+- pnpm preview: preview production build locally
 
 ## Deploy on Vercel
 
@@ -77,7 +78,7 @@ See .env.example for defaults.
 
 Vercel build settings are standard for Vite:
 
-- Build Command: npm run build
+- Build Command: pnpm build
 - Output Directory: dist
 
 ## Notes

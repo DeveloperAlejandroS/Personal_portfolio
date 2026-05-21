@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { ArrowUp } from 'lucide-react';
 import { GITHUB_USER } from './data/portfolio';
 
 import AnimatedBackground from './components/AnimatedBackground';
@@ -190,7 +191,7 @@ export default function App() {
           transition: 'opacity 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease',
         }}
       >
-        ↑
+        <ArrowUp size={18} strokeWidth={2.4} />
       </button>
 
       <Footer />
