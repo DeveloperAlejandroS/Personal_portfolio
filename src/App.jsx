@@ -148,7 +148,6 @@ export default function App() {
       <Navbar
         active={active}
         onNavigate={setActive}
-        githubUser={GITHUB_USER}
         theme={theme}
         onToggleTheme={toggleTheme}
       />

@@ -94,7 +94,7 @@
     --content-max-width: 1000px;
     --page-x-padding: 16px;
     --page-top-padding: 92px;
-    --page-bottom-padding: 40px;
+    --page-bottom-padding: 112px;
   }
 }
 
@@ -110,7 +110,7 @@
     --project-card-width: min(88vw, 260px);
     --page-x-padding: 14px;
     --page-top-padding: 88px;
-    --page-bottom-padding: 32px;
+    --page-bottom-padding: 104px;
   }
 }
 

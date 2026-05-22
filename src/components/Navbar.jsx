@@ -1,21 +1,23 @@
 // components/Navbar.jsx
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Menu, MoonStar, SunMedium, X } from 'lucide-react';
+import { Briefcase, Cpu, FolderOpen, MoonStar, SunMedium, User } from 'lucide-react';
 import styles from './Navbar.module.css';
 
 const NAV_LINKS = ["About", "Experience", "Technologies", "Projects"];
+const MOBILE_ICONS = {
+  About: User,
+  Experience: Briefcase,
+  Technologies: Cpu,
+  Projects: FolderOpen,
+};
 
-export default function Navbar({ active, onNavigate, githubUser, theme, onToggleTheme }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const hamburgerRef = useRef(null);
-  const drawerRef = useRef(null);
+export default function Navbar({ active, onNavigate, theme, onToggleTheme }) {
   const linksRef = useRef(null);
   const linkRefs = useRef({});
   const [indicatorStyle, setIndicatorStyle] = useState({ transform: 'translateX(0px)', width: '0px', opacity: 0 });
 
   const handleNavigate = (link) => {
     onNavigate(link);
-    setMenuOpen(false);
   };
 
   const syncIndicator = () => {
@@ -45,38 +47,6 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
     return () => window.removeEventListener('resize', onResize);
   }, [active]);
 
-  useEffect(() => {
-    if (!menuOpen) {
-      hamburgerRef.current?.focus();
-      return;
-    }
-
-    const focusables = drawerRef.current?.querySelectorAll('button, a') || [];
-    focusables[0]?.focus();
-
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        setMenuOpen(false);
-        return;
-      }
-
-      if (event.key !== 'Tab' || focusables.length === 0) return;
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [menuOpen]);
-
   return (
     <nav className={styles.nav} role="navigation" aria-label="Main navigation">
       <div className={styles.pill}>
@@ -92,22 +62,31 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
         {/* Center section - Desktop nav links */}
         <div className={styles.links} ref={linksRef}>
           <span className={styles.activeIndicator} style={indicatorStyle} aria-hidden="true" />
-          {NAV_LINKS.map((link) => (
-            <button
-              key={link}
-              className={`${styles.link} ${active === link ? styles.active : ""}`}
-              ref={(node) => {
-                if (node) {
-                  linkRefs.current[link] = node;
-                }
-              }}
-              onClick={() => handleNavigate(link)}
-              type="button"
-              aria-current={active === link ? "page" : undefined}
-            >
-              {link}
-            </button>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const Icon = MOBILE_ICONS[link];
+
+            return (
+              <button
+                key={link}
+                className={`${styles.link} ${active === link ? styles.active : ""}`}
+                ref={(node) => {
+                  if (node) {
+                    linkRefs.current[link] = node;
+                  }
+                }}
+                onClick={() => handleNavigate(link)}
+                type="button"
+                aria-current={active === link ? "page" : undefined}
+                aria-label={link}
+                title={link}
+              >
+                <span className={styles.linkLabel}>{link}</span>
+                <span className={styles.linkIcon} aria-hidden="true">
+                  <Icon size={16} strokeWidth={2.4} />
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Right section - Controls */}
@@ -123,49 +102,8 @@ export default function Navbar({ active, onNavigate, githubUser, theme, onToggle
             {theme === "dark" ? <SunMedium size={16} strokeWidth={2.4} /> : <MoonStar size={16} strokeWidth={2.4} />}
           </button>
 
-          {/* Hamburger (mobile only) */}
-          <button
-            ref={hamburgerRef}
-            className={styles.hamburger}
-            onClick={() => setMenuOpen((o) => !o)}
-            type="button"
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav-drawer"
-          >
-            {menuOpen ? <X size={18} strokeWidth={2.4} /> : <Menu size={18} strokeWidth={2.4} />}
-          </button>
         </div>
       </div>
-
-      {/* Mobile drawer - appears below pill */}
-      {menuOpen && (
-        <div ref={drawerRef} className={styles.drawer} id="mobile-nav-drawer" aria-label="Mobile navigation">
-          <div className={styles.drawerContent}>
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link}
-                className={`${styles.drawerLink} ${active === link ? styles.drawerActive : ""}`}
-                onClick={() => handleNavigate(link)}
-                type="button"
-                aria-current={active === link ? "page" : undefined}
-              >
-                {link}
-              </button>
-            ))}
-            <a
-              href={`https://github.com/${githubUser}`}
-              target="_blank"
-              rel="noreferrer noopener"
-              className={styles.drawerGh}
-              aria-label={`Visit GitHub profile (opens in new window)`}
-            >
-              <span>GitHub</span>
-              <ArrowUpRight size={14} strokeWidth={2.4} />
-            </a>
-          </div>
-        </div>
-      )}
     </nav>
   );
 }
