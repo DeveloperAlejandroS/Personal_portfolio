@@ -33,6 +33,24 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', saved);
   }, []);
 
+  // Reliable viewport height on mobile: expose --vh CSS var (1% of innerHeight)
+  useEffect(() => {
+    const setVh = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setVh();
+    window.addEventListener('resize', setVh, { passive: true });
+    window.addEventListener('orientationchange', setVh);
+    return () => {
+      window.removeEventListener('resize', setVh);
+      window.removeEventListener('orientationchange', setVh);
+    };
+  }, []);
+
+  
+
   useEffect(() => {
     const previousSection = previousSectionRef.current;
     if (previousSection !== active) {
