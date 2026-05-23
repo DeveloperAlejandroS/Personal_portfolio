@@ -98,16 +98,18 @@ export const SKILLS = {
 };
 
 export const LANG_COLORS = {
-  JavaScript: "#F7DF1E",
-  TypeScript: "#3178C6",
-  React: "#61DAFB",
-  "Next.js": "#FFFFFF",
-  HTML5: "#E34F26",
-  CSS3: "#1572B6",
+  "Jupyter Notebook": "#FF6F00", // warm orange
+  JavaScript: "#F7DF1E", // yellow (classic)
+  TypeScript: "#2F74C0", // deep cerulean
+  React: "#61DAFB", // cyan
+  "Next.js": "#111827", // near-black
+  HTML5: "#E34F26", // orange-red
+  CSS3: "#2965F1", // vivid blue
   "Tailwind CSS": "#38BDF8",
   SQL: "#336791",
   Git: "#F05032",
-  Express: "#A3A3A3",
-  Flask: "#E5E5E5",
-  default: "#8B5CF6",
+  Express: "#8A8A8A",
+  Flask: "#ECEFF1",
+  Python: "#3776AB",
+  default: "#9F7AEA",
 };

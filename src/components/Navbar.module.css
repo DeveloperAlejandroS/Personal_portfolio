@@ -218,8 +218,8 @@
 @media (max-width: 700px) {
   .nav {
     top: auto;
-    bottom: 0;
-    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    bottom: 12px; /* lift the floating bar a bit from the screen edge */
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom) + 6px);
   }
 
   .section {
