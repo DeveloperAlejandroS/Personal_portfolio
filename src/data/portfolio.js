@@ -3,22 +3,22 @@
 //  ✏️  Edit this file to update your portfolio content.
 // ─────────────────────────────────────────────────────────
 
-export const GITHUB_USER =
-  (typeof import.meta.env.VITE_GITHUB_USER === 'string' && import.meta.env.VITE_GITHUB_USER.trim())
-  || "DeveloperAlejandroS";
+// Also read by the /api/github serverless function, so keep this file free of browser-only APIs.
+export const GITHUB_USER = "DeveloperAlejandroS";
 
 export const PROFILE = {
   name: "Alejandro Sierra Vargas",
   role: "Frontend Developer | React, Next.js & Tailwind CSS",
   bio: "Frontend developer focused on building modern, responsive, and scalable web applications using React, TypeScript, and Tailwind CSS. Passionate about UI design, smooth user experiences, and creating performant digital products with clean and maintainable architecture.",
   email: "a.sierravargas115@gmail.com",
-  phone: "(315) 650-3336",
+  phone: "+57 315 650 3336",
   location: "Bogotá, Colombia",
+  linkedin: "https://www.linkedin.com/in/alejandro-s-vargas-ab0766262/",
 };
 
 export const EDUCATION = [
   {
-    school: "Politécnico Gran Colombiano",
+    school: "Politécnico Grancolombiano",
     degree: "Software Engineering",
     period: "Mar 2026 – Present",
   },
@@ -45,7 +45,7 @@ export const EXPERIENCE = [
         text: "Built and maintain a suite of Google Apps Script market-intelligence agents that research four business areas (Smart Tech, Experience Design, Business Model Strategy, and Comms) and consolidate findings into a weekly strategic briefing."
       },
       {
-        iconKey: "python",
+        iconKey: "ai",
         text: "Integrated the Gemini API into the agent pipeline to automate research analysis and generate structured, consolidated reports without manual intervention."
       },
       {
@@ -85,55 +85,62 @@ export const EXPERIENCE = [
   },
 ];
 
+// `shortName` is shown on the compact chips in the About section.
 export const CERTIFICATIONS = [
-  { name: "Scrum Foundation Professional (SFPC)", issuer: "CertiProf", date: "Aug 2024", iconKey: "award" },
-  { name: "Networking Basics", issuer: "Cisco Networking Academy", date: "May 2025", iconKey: "network" },
-  { name: "CCNA: Introduction to Networks", issuer: "Cisco Networking Academy", date: "Nov 2025", iconKey: "link" },
-  { name: "PCEP: Python Essentials 1", issuer: "Cisco Networking Academy", date: "Dec 2025", iconKey: "python" },
-  { name: "PCAP: Python Essentials 2", issuer: "Cisco Networking Academy", date: "Dec 2025", iconKey: "python" },
+  { name: "Scrum Foundation Professional Certificate (SFPC)", shortName: "Scrum SFPC", issuer: "CertiProf", date: "Aug 2024", iconKey: "award" },
+  { name: "Networking Basics", shortName: "Networking Basics", issuer: "Cisco Networking Academy", date: "May 2025", iconKey: "network" },
+  { name: "CCNA: Introduction to Networks", shortName: "CCNA: Intro to Networks", issuer: "Cisco Networking Academy", date: "Nov 2025", iconKey: "link" },
+  { name: "PCEP – Certified Entry-Level Python Programmer", shortName: "PCEP", issuer: "Python Institute", note: "Python Essentials 1 · Cisco Networking Academy", date: "Dec 2025", iconKey: "python" },
+  { name: "PCAP – Certified Associate Python Programmer", shortName: "PCAP", issuer: "Python Institute", note: "Python Essentials 2 · Cisco Networking Academy", date: "Dec 2025", iconKey: "python" },
 ];
 
+// Rendered by category in the Technologies section.
 export const SKILLS = {
   "Programming Languages": [
-    { name: "Python", iconKey: "python", level: 90 },
-    { name: "JavaScript", iconKey: "javascript", level: 85 },
-    { name: "TypeScript", iconKey: "typescript", level: 80 },
+    { name: "Python", iconKey: "python" },
+    { name: "JavaScript", iconKey: "javascript" },
+    { name: "TypeScript", iconKey: "typescript" },
   ],
   "Frontend Development": [
-    { name: "React", iconKey: "react", level: 85 },
-    { name: "Next.js", iconKey: "nextjs", level: 78 },
-    { name: "Tailwind CSS", iconKey: "tailwind", level: 85 },
-    { name: "HTML5", iconKey: "html", level: 90 },
-    { name: "CSS3", iconKey: "css", level: 88 },
-    { name: "Responsive Design", iconKey: "responsive", level: 85 },
+    { name: "React", iconKey: "react" },
+    { name: "Next.js", iconKey: "nextjs" },
+    { name: "Tailwind CSS", iconKey: "tailwind" },
+    { name: "HTML5", iconKey: "html" },
+    { name: "CSS3", iconKey: "css" },
+    { name: "Responsive Design", iconKey: "responsive" },
   ],
   "Backend & Tools": [
-    { name: "Express.js", iconKey: "express", level: 75 },
-    { name: "Flask", iconKey: "flask", level: 70 },
-    { name: "SQL", iconKey: "sql", level: 80 },
-    { name: "Git", iconKey: "git", level: 82 },
+    { name: "Express.js", iconKey: "express" },
+    { name: "Flask", iconKey: "flask" },
+    { name: "SQL", iconKey: "sql" },
+    { name: "Git", iconKey: "git" },
   ],
   "Additional Tools": [
-    { name: "Power BI", iconKey: "analytics", level: 75 },
-    { name: "Excel", iconKey: "excel", level: 85 },
-    { name: "Git", iconKey: "git", level: 82 },
-    { name: "Scrum", iconKey: "workflow", level: 80 },
+    { name: "Google Apps Script", iconKey: "appsscript" },
+    { name: "Power Automate", iconKey: "powerautomate" },
+    { name: "Power BI", iconKey: "analytics" },
+    { name: "Excel", iconKey: "excel" },
+    { name: "Scrum", iconKey: "workflow" },
   ],
 };
 
+// GitHub repo names (case-insensitive) pinned to the top of the Projects section, in this order.
+export const FEATURED_REPOS = ["split-it", "alter-design-studio", "quick-dash", "expense-tracker-api"];
+
+// Left out of the Tech Stack totals: notebooks store outputs in the file, so their byte counts dwarf real code.
+export const EXCLUDED_LANGUAGES = ["Jupyter Notebook"];
+
+// GitHub repo names (case-insensitive) never shown in the Projects section.
+export const HIDDEN_REPOS = ["Personal_portfolio", "DeveloperAlejandroS", "prueba-tecnica", "ParcialAppsMoviles"];
+
+// Keyed by GitHub's language names; anything missing uses `default`.
 export const LANG_COLORS = {
-  "Jupyter Notebook": "#FF6F00", // warm orange
-  JavaScript: "#F7DF1E", // yellow (classic)
-  TypeScript: "#2F74C0", // deep cerulean
-  React: "#61DAFB", // cyan
-  "Next.js": "#111827", // near-black
-  HTML5: "#E34F26", // orange-red
-  CSS3: "#2965F1", // vivid blue
-  "Tailwind CSS": "#38BDF8",
-  SQL: "#336791",
-  Git: "#F05032",
-  Express: "#8A8A8A",
-  Flask: "#ECEFF1",
+  "Jupyter Notebook": "#FF6F00",
+  JavaScript: "#F7DF1E",
+  TypeScript: "#2F74C0",
+  HTML: "#E34F26",
+  CSS: "#2965F1",
+  Kotlin: "#A97BFF",
   Python: "#3776AB",
   default: "#9F7AEA",
 };

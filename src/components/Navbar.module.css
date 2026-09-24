@@ -62,7 +62,7 @@
 
 .lastName {
   display: inline-block;
-  background: linear-gradient(90deg, #ff4d6d, #ffb703, #00d4ff, #c084fc, #ff4d6d);
+  background: var(--scream-gradient);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -171,6 +171,7 @@
 }
 
 .themeBtn {
+  color: var(--text-primary);
   background: var(--tag-bg);
   border: 1px solid var(--tag-border);
   border-radius: 20px;

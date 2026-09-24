@@ -5,7 +5,6 @@ import { LANG_COLORS } from '../data/portfolio';
 const MODAL_ANIMATION_MS = 260;
 
 export default function DesktopProjectModal({ repo, isOpen, onClose }) {
-  const [repoLanguages, setRepoLanguages] = useState([]);
   const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState('closed');
   const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280);
@@ -21,48 +20,16 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
     return /^https?:\/\//i.test(homepage) ? homepage : `https://${homepage}`;
   }, [repo]);
 
-  useEffect(() => {
-    if (!isOpen || !repo?.languages_url) {
-      setRepoLanguages([]);
-      return;
-    }
+  const repoLanguages = useMemo(() => {
+    const entries = Object.entries(repo?.languages ?? {});
+    const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
+    if (!total) return [];
 
-    const base =
-      (typeof import.meta.env.VITE_GITHUB_API_BASE === 'string' && import.meta.env.VITE_GITHUB_API_BASE.trim())
-      || 'https://api.github.com';
-    const token =
-      (typeof import.meta.env.VITE_GITHUB_TOKEN === 'string' && import.meta.env.VITE_GITHUB_TOKEN.trim())
-      || '';
-    const headers = {
-      Accept: 'application/vnd.github+json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-    const controller = new AbortController();
-
-    fetch(repo.languages_url.replace('https://api.github.com', base), { headers, signal: controller.signal })
-      .then((r) => (r.ok ? r.json() : {}))
-      .then((data) => {
-        const entries = Object.entries(data || {});
-        const total = entries.reduce((sum, [, bytes]) => sum + Number(bytes || 0), 0);
-        if (!total) {
-          setRepoLanguages([]);
-          return;
-        }
-
-        const distribution = entries
-          .map(([name, bytes]) => ({
-            name,
-            pct: Math.round((Number(bytes || 0) / total) * 100),
-          }))
-          .filter((item) => item.pct > 0)
-          .sort((a, b) => b.pct - a.pct);
-
-        setRepoLanguages(distribution);
-      })
-      .catch(() => setRepoLanguages([]));
-
-    return () => controller.abort();
-  }, [isOpen, repo]);
+    return entries
+      .map(([name, bytes]) => ({ name, pct: Math.round((bytes / total) * 100) }))
+      .filter((item) => item.pct > 0)
+      .sort((a, b) => b.pct - a.pct);
+  }, [repo]);
 
   useEffect(() => {
     const onResize = () => setViewportWidth(window.innerWidth);
@@ -101,7 +68,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
 
     const onKeyDown = (event) => {
       if (event.key === 'Escape') {
-        onClose();
+        requestClose();
         return;
       }
 
@@ -192,7 +159,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 30,
+        zIndex: 150,
         background: isClosing ? 'rgba(4, 3, 12, 0)' : 'rgba(4, 3, 12, 0.78)',
         backdropFilter: isClosing ? 'blur(0px)' : 'blur(6px)',
         display: 'grid',
@@ -207,7 +174,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
         style={{
           width: 'min(1120px, calc(100vw - 32px))',
           maxHeight: 'calc(100vh - 32px)',
-          background: 'linear-gradient(180deg, rgba(24, 18, 40, 0.96), rgba(14, 10, 24, 0.96))',
+          background: 'linear-gradient(180deg, var(--bg-base-2), var(--bg-base))',
           border: '1px solid var(--border)',
           borderRadius: 18,
           overflow: 'hidden',
@@ -243,7 +210,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
                 padding: 24,
               }}
             >
-              Este proyecto no tiene sitio en vivo.
+              This project has no live site.
             </div>
           )}
 
@@ -259,14 +226,14 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
                 ref={closeButtonRef}
                 type="button"
                 onClick={requestClose}
-                aria-label="Cerrar modal"
+                aria-label="Close project details"
                 style={{
                   width: 36,
                   height: 36,
                   borderRadius: '50%',
-                  border: '1px solid rgba(255,255,255,0.28)',
-                  background: 'rgba(0,0,0,0.28)',
-                  color: '#fff',
+                  border: '1px solid var(--border-hover)',
+                  background: 'var(--tag-bg)',
+                  color: 'var(--text-primary)',
                   cursor: 'pointer',
                   fontSize: '0.95rem',
                   lineHeight: 1,
@@ -343,7 +310,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
                 fontSize: '0.75rem',
               }}
             >
-              Ver codigo
+              View code
             </a>
             {liveUrl && (
               <a
@@ -363,7 +330,7 @@ export default function DesktopProjectModal({ repo, isOpen, onClose }) {
                   fontSize: '0.75rem',
                 }}
               >
-                Abrir sitio
+                Open site
               </a>
             )}
           </div>

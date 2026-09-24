@@ -2,7 +2,7 @@
 // Real language data fetched from GitHub
 import { useState, useEffect } from 'react';
 import { ChartColumnIncreasing } from 'lucide-react';
-import { LANG_COLORS } from '../data/portfolio';
+import { LANG_COLORS, SKILLS } from '../data/portfolio';
 import { LANGUAGE_ICON_MAP, SKILL_ICON_MAP } from '../data/techIcons';
 
 export default function Technologies({ githubLangs }) {
@@ -91,26 +91,37 @@ export default function Technologies({ githubLangs }) {
       <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 16 }}>
         ALL TECHNOLOGIES
       </h3>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-        {['python','javascript','typescript','react','nextjs','tailwind','html','css','express','flask','sql','git','analytics','excel','workflow'].map((key) => {
-          const iconSpec = SKILL_ICON_MAP[key] || SKILL_ICON_MAP.default;
-          const label = {
-            python: 'Python', javascript: 'JavaScript', typescript: 'TypeScript', react: 'React', nextjs: 'Next.js', tailwind: 'Tailwind CSS',
-            html: 'HTML5', css: 'CSS3', express: 'Express.js', flask: 'Flask', sql: 'SQL', git: 'Git', analytics: 'Power BI', excel: 'Excel', workflow: 'Scrum',
-          }[key] || key;
-          const Icon = iconSpec.kind === 'fallback' ? iconSpec.icon : null;
-          return (
-          <div key={key} className="glass-card" style={{ padding: '8px 16px', borderRadius: 30, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            {iconSpec.kind === 'devicon' ? (
-              <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
-            ) : (
-              <Icon size={14} strokeWidth={2.2} />
-            )}
-            <span style={{ fontSize: '0.82rem', color: 'var(--accent-light)' }}>{label}</span>
+      <div style={{ display: 'grid', gap: 20 }}>
+        {Object.entries(SKILLS).map(([category, skills]) => (
+          <div key={category}>
+            <h4 style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.74rem', fontWeight: 500, marginBottom: 10 }}>
+              {category}
+            </h4>
+            <ul style={{ listStyle: 'none', display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              {skills.map((skill) => (
+                <SkillChip key={skill.name} skill={skill} />
+              ))}
+            </ul>
           </div>
-        );})}
+        ))}
       </div>
     </div>
+  );
+}
+
+function SkillChip({ skill }) {
+  const iconSpec = SKILL_ICON_MAP[skill.iconKey] || SKILL_ICON_MAP.default;
+  const Icon = iconSpec.kind === 'fallback' ? iconSpec.icon : null;
+
+  return (
+    <li className="glass-card" style={{ padding: '8px 16px', borderRadius: 30, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      {iconSpec.kind === 'devicon' ? (
+        <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
+      ) : (
+        <Icon size={14} strokeWidth={2.2} aria-hidden="true" />
+      )}
+      <span style={{ fontSize: '0.82rem', color: 'var(--accent-light)' }}>{skill.name}</span>
+    </li>
   );
 }
 
@@ -135,7 +146,7 @@ function SkillBar({ skill, animated }) {
           </span>
           {skill.name}
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-mid)' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--accent-text)' }}>
           {skill.level}%
         </span>
       </div>

@@ -4,20 +4,76 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#09080f" />
+    <script>
+      // Apply the saved theme before first paint (App.jsx keeps it in sync afterwards).
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#faf7ff');
+        }
+      } catch {}
+    </script>
     <meta name="mobile-web-app-capable" content="yes" />
-
-
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-    <link rel="icon" type="image/png" href="/icon.png" />
-    
-    <title>Alejandro Sierra · Portfolio</title>
+    <title>Alejandro Sierra Vargas · Frontend Developer</title>
+    <meta name="description" content="Frontend developer in Bogotá, Colombia, building responsive web apps with React, Next.js, TypeScript and Tailwind CSS. Projects, experience and certifications." />
+    <meta name="author" content="Alejandro Sierra Vargas" />
+    <link rel="canonical" href="https://alejandro-sierra-dev.vercel.app/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alejandro Sierra Vargas" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://alejandro-sierra-dev.vercel.app/" />
+    <meta property="og:title" content="Alejandro Sierra Vargas · Frontend Developer" />
+    <meta property="og:description" content="Responsive web apps with React, Next.js, TypeScript and Tailwind CSS. Explore my projects, experience and certifications." />
+    <meta property="og:image" content="https://alejandro-sierra-dev.vercel.app/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Alejandro Sierra Vargas, Frontend Developer — React, Next.js, TypeScript, Tailwind CSS" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Alejandro Sierra Vargas · Frontend Developer" />
+    <meta name="twitter:description" content="Responsive web apps with React, Next.js, TypeScript and Tailwind CSS. Explore my projects, experience and certifications." />
+    <meta name="twitter:image" content="https://alejandro-sierra-dev.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt" content="Alejandro Sierra Vargas, Frontend Developer — React, Next.js, TypeScript, Tailwind CSS" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Alejandro Sierra Vargas",
+        "url": "https://alejandro-sierra-dev.vercel.app/",
+        "image": "https://alejandro-sierra-dev.vercel.app/og-image.png",
+        "jobTitle": "Frontend Developer",
+        "address": { "@type": "PostalAddress", "addressLocality": "Bogotá", "addressCountry": "CO" },
+        "sameAs": [
+          "https://github.com/DeveloperAlejandroS",
+          "https://www.linkedin.com/in/alejandro-s-vargas-ab0766262/"
+        ],
+        "knowsAbout": ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Python"]
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <noscript>
+      <p style="font-family: sans-serif; padding: 24px;">
+        Alejandro Sierra Vargas — Frontend Developer. This portfolio needs JavaScript;
+        you can also find me on <a href="https://github.com/DeveloperAlejandroS">GitHub</a> and
+        <a href="https://www.linkedin.com/in/alejandro-s-vargas-ab0766262/">LinkedIn</a>.
+      </p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

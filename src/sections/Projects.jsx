@@ -1,13 +1,13 @@
 // sections/Projects.jsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowUpRight, ChevronLeft, ChevronRight, Code2, LoaderCircle, TriangleAlert } from 'lucide-react';
-import { GITHUB_USER, LANG_COLORS } from '../data/portfolio';
+import { FEATURED_REPOS, GITHUB_USER, HIDDEN_REPOS, LANG_COLORS } from '../data/portfolio';
 import DesktopProjectModal from '../components/DesktopProjectModal';
 
 const RESPONSIVE_CARD_WIDTH = 'var(--project-card-width)';
 const LIVE_CARD_RATIO = '300 / 645';
 const COMPACT_CARD_RATIO = '300 / 345';
-const EXCLUDED_REPO_NAMES = new Set(['personal_portfolio', 'developeralejandros']);
+const HIDDEN_REPO_NAMES = new Set(HIDDEN_REPOS.map((name) => name.toLowerCase()));
 
 // ── Style Constants ────────────────────────────────────
 const STYLES = {
@@ -51,7 +51,6 @@ const STYLES = {
       overflow: 'hidden',
     },
     meta: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
-    stats: { display: 'flex', gap: 10, color: 'var(--text-secondary)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' },
     tags: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 14 },
     actions: { display: 'flex', gap: 8, flexWrap: 'wrap' },
   },
@@ -96,20 +95,23 @@ export default function Projects({ githubRepos = null, githubReposError = false 
   }, [isDesktop]);
 
   const repos = githubRepos
-    ? githubRepos.filter((repo) => !repo.archived && !EXCLUDED_REPO_NAMES.has(repo.name.toLowerCase()))
+    ? githubRepos.filter((repo) => !repo.archived && !HIDDEN_REPO_NAMES.has(repo.name.toLowerCase()))
       .slice()
       .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
     : [];
   const loading = githubRepos === null;
   const error = githubReposError;
-  const liveRepos = repos
+  const featuredRepos = FEATURED_REPOS
+    .map((name) => repos.find((repo) => repo.name.toLowerCase() === name.toLowerCase()))
+    .filter(Boolean);
+  const otherRepos = repos.filter((repo) => !featuredRepos.includes(repo));
+  const liveRepos = otherRepos
     .filter((repo) => hasLiveUrl(repo))
     .sort(sortByFeaturedScore);
   const groupedRepos = groupReposByTechnology(
-    repos.filter((repo) => !hasLiveUrl(repo))
+    otherRepos.filter((repo) => !hasLiveUrl(repo))
   );
   const isMobile = viewportWidth < 768;
-  const isTablet = viewportWidth >= 768 && viewportWidth < 1180;
   const sectionTitleSize = isMobile ? 'clamp(1.45rem, 7vw, 2rem)' : 'clamp(1.8rem, 5vw, 2.5rem)';
   const sectionSubtitleMargin = isMobile ? 32 : 48;
   return (
@@ -119,7 +121,7 @@ export default function Projects({ githubRepos = null, githubReposError = false 
           GitHub <span className="gradient-text">Projects</span>
         </h2>
         <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer"
-          style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? '0.72rem' : '0.8rem', color: 'var(--accent-mid)', textDecoration: 'none' }}>
+          style={{ fontFamily: 'var(--font-mono)', fontSize: isMobile ? '0.72rem' : '0.8rem', color: 'var(--accent-text)', textDecoration: 'none' }}>
           View all <ArrowUpRight size={14} strokeWidth={2.4} style={{ display: 'inline', verticalAlign: 'middle' }} />
         </a>
       </div>
@@ -137,6 +139,17 @@ export default function Projects({ githubRepos = null, githubReposError = false 
       )}
       {!loading && !error && repos.length > 0 && (
         <div style={{ display: 'grid', gap: 28 }}>
+          {featuredRepos.length > 0 && (
+            <ProjectSection
+              title="Featured projects"
+              description="Hand-picked highlights of my recent work."
+              repos={featuredRepos}
+              isDesktop={isDesktop}
+              viewportWidth={viewportWidth}
+              onSelectRepo={setSelectedRepo}
+            />
+          )}
+
           {liveRepos.length > 0 && (
             <ProjectSection
               title="Live websites"
@@ -179,6 +192,7 @@ export default function Projects({ githubRepos = null, githubReposError = false 
 
 function ProjectSection({ title, description, repos, isDesktop, viewportWidth, onSelectRepo }) {
   const carouselRef = useRef(null);
+  const titleId = useId();
   const isMobile = viewportWidth < 768;
   const isTablet = viewportWidth >= 768 && viewportWidth < 1180;
   const carouselGap = isMobile ? 14 : isTablet ? 18 : 20;
@@ -198,10 +212,10 @@ function ProjectSection({ title, description, repos, isDesktop, viewportWidth, o
   };
 
   return (
-    <section style={{ display: 'grid', gap: sectionGap }}>
+    <section aria-labelledby={titleId} style={{ display: 'grid', gap: sectionGap }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-end', gap: 8 }}>
         <div>
-          <h3 style={{ fontSize: sectionTitleSize, fontWeight: 700, marginBottom: isMobile ? 4 : 6 }}>{title}</h3>
+          <h3 id={titleId} style={{ fontSize: sectionTitleSize, fontWeight: 700, marginBottom: isMobile ? 4 : 6 }}>{title}</h3>
           {description && (
             <p style={{ color: 'var(--text-muted)', fontSize: sectionDescriptionSize, fontFamily: 'var(--font-mono)' }}>{description}</p>
           )}
@@ -366,8 +380,8 @@ function RepoCard({ repo, canOpenModal, onOpenModal }) {
           {repo.name}
         </h3>
         {canOpenModal && (
-          <p style={{ color: 'var(--accent-mid)', fontFamily: 'var(--font-mono)', fontSize: isMobile ? '0.64rem' : '0.68rem', marginBottom: 8 }}>
-            Click para abrir detalle
+          <p style={{ color: 'var(--accent-text)', fontFamily: 'var(--font-mono)', fontSize: isMobile ? '0.64rem' : '0.68rem', marginBottom: 8 }}>
+            Click to view details
           </p>
         )}
         <p style={{
@@ -388,7 +402,7 @@ function RepoCard({ repo, canOpenModal, onOpenModal }) {
               {repo.language}
             </span>
           )}
-          {repo.topics?.slice(0, 3).map((t) => <span key={t} className="tag" role="listitem">{t}</span>)}
+          {repo.topics?.slice(0, 3).map((t) => <span key={t} className="tag">{t}</span>)}
         </div>
 
         {/* ── Action buttons ── */}
@@ -543,7 +557,7 @@ function ErrorState({ user }) {
   return (
     <div className="glass-card" style={{ padding: 40, textAlign: 'center', ...STYLES.error.container }} role="alert" aria-label="Failed to load repositories">
       <p style={{ ...STYLES.error.text, display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}><TriangleAlert size={18} strokeWidth={2.2} /> Could not load repositories</p>
-      <p style={STYLES.error.subtext}>There was an issue fetching your GitHub projects. This may be due to rate limiting or network issues.</p>
+      <p style={STYLES.error.subtext}>There was an issue fetching my GitHub projects. This may be due to rate limiting or network issues.</p>
       <a href={`https://github.com/${user}`} target="_blank" rel="noreferrer noopener"
         style={{ color: 'var(--accent-bright)', textDecoration: 'none', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16 }} 
         aria-label={`Visit ${user}'s GitHub profile (opens in new window)`}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { GITHUB_USER } from './data/portfolio';
+import { fetchGithubData } from './lib/github';
 
 import AnimatedBackground from './components/AnimatedBackground';
 import Navbar             from './components/Navbar';
@@ -13,10 +14,20 @@ import Projects       from './sections/Projects';
 
 const SECTIONS = { About, Experience, Technologies, Projects };
 const SECTION_ORDER = ['About', 'Experience', 'Technologies', 'Projects'];
+const THEME_COLORS = { dark: '#09080f', light: '#faf7ff' };
+
+// Sections live at #about, #experience, ... so they can be linked and the back button works.
+// Returns undefined for unrelated hashes such as the skip link's #main-content.
+function sectionFromHash() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return 'About';
+  return SECTION_ORDER.find((name) => name.toLowerCase() === hash);
+}
 
 export default function App() {
-  const [active, setActive] = useState('About');
-  const [theme,  setTheme]  = useState('dark');
+  const [active, setActive] = useState(() => sectionFromHash() ?? 'About');
+  // index.html applies the saved theme before first paint.
+  const [theme, setTheme] = useState(() => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'));
   const [transitionDirection, setTransitionDirection] = useState('forward');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const previousSectionRef = useRef(active);
@@ -28,9 +39,12 @@ export default function App() {
   const [githubLangs,   setGithubLangs]   = useState(null); // { Python: 42, JS: 33, ... } (%)
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') || 'dark';
-    setTheme(saved);
-    document.documentElement.setAttribute('data-theme', saved);
+    const onHashChange = () => {
+      const section = sectionFromHash();
+      if (section) setActive(section);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
   // Reliable viewport height on mobile: expose --vh CSS var (1% of innerHeight)
@@ -58,6 +72,8 @@ export default function App() {
       const currentIndex = SECTION_ORDER.indexOf(active);
       setTransitionDirection(currentIndex >= previousIndex ? 'forward' : 'backward');
       previousSectionRef.current = active;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.getElementById('main-content')?.focus({ preventScroll: true });
     }
   }, [active]);
 
@@ -71,65 +87,32 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // ── Fetch GitHub profile + aggregate languages ─────────
+  // ── GitHub profile, repos and language totals ──────────
+  // Served by /api/github (token stays server-side, response is edge-cached);
+  // falls back to unauthenticated browser requests if the function is unavailable.
   useEffect(() => {
-    const base =
-      (typeof import.meta.env.VITE_GITHUB_API_BASE === 'string' && import.meta.env.VITE_GITHUB_API_BASE.trim())
-      || 'https://api.github.com';
-    const token =
-      (typeof import.meta.env.VITE_GITHUB_TOKEN === 'string' && import.meta.env.VITE_GITHUB_TOKEN.trim())
-      || '';
-    const headers = {
-      Accept: 'application/vnd.github+json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
     const controller = new AbortController();
 
-    const fetchJson = async (url) => {
-      const response = await fetch(url, { headers, signal: controller.signal });
-      if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
-      return response.json();
+    const loadFromApi = async () => {
+      const response = await fetch('/api/github', { signal: controller.signal });
+      if (!response.ok) throw new Error(`GitHub proxy error: ${response.status}`);
+      const data = await response.json();
+      if (!Array.isArray(data?.repos)) throw new Error('Unexpected GitHub proxy payload');
+      return data;
     };
 
-    // 1. User profile (avatar, name, bio, etc.)
-    fetchJson(`${base}/users/${GITHUB_USER}`)
-      .then((u) => setGithubProfile(u))
-      .catch(() => {});
-
-    // 2. All repos → fetch each repo's language breakdown → sum bytes
-    fetchJson(`${base}/users/${GITHUB_USER}/repos?per_page=100`)
-      .then(async (repos) => {
-        if (!Array.isArray(repos)) {
-          setGithubReposError(true);
-          setGithubRepos([]);
-          return;
-        }
-        setGithubReposError(false);
-        setGithubRepos(repos.filter((r) => !r.fork));
-        const totals = {};
-        await Promise.all(
-          repos
-            .filter((r) => !r.fork && r.language)
-            .map((r) =>
-              fetchJson(r.languages_url)
-                .then((langs) => {
-                  Object.entries(langs).forEach(([lang, bytes]) => {
-                    totals[lang] = (totals[lang] || 0) + bytes;
-                  });
-                })
-                .catch(() => {})
-            )
-        );
-        // Convert to percentages, keep top 10
-        const total = Object.values(totals).reduce((a, b) => a + b, 0);
-        if (!total) return;
-        const pct = Object.entries(totals)
-          .map(([lang, bytes]) => ({ lang, pct: Math.round((bytes / total) * 100) }))
-          .sort((a, b) => b.pct - a.pct)
-          .slice(0, 10);
-        setGithubLangs(pct);
+    loadFromApi()
+      .catch((error) => {
+        if (controller.signal.aborted) throw error;
+        return fetchGithubData(GITHUB_USER, { signal: controller.signal });
+      })
+      .then((data) => {
+        setGithubProfile(data.profile);
+        setGithubRepos(data.repos);
+        setGithubLangs(data.languages.length ? data.languages : null);
       })
       .catch(() => {
+        if (controller.signal.aborted) return;
         setGithubReposError(true);
         setGithubRepos([]);
       });
@@ -141,7 +124,21 @@ export default function App() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLORS[next]);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // Storage can be blocked (private mode, disabled cookies); the theme just won't persist.
+    }
+  };
+
+  const navigate = (section) => {
+    window.location.hash = section.toLowerCase();
+  };
+
+  const skipToContent = (event) => {
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
   };
 
   const scrollToTop = () => {
@@ -157,15 +154,15 @@ export default function App() {
 
   return (
     <>
-      <a href="#main-content" className="skip-link">
-        Saltar al contenido principal
+      <a href="#main-content" className="skip-link" onClick={skipToContent}>
+        Skip to main content
       </a>
 
       <AnimatedBackground theme={theme} />
 
       <Navbar
         active={active}
-        onNavigate={setActive}
+        onNavigate={navigate}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
@@ -183,12 +180,12 @@ export default function App() {
       <button
         type="button"
         onClick={scrollToTop}
-        aria-label="Volver arriba"
-        title="Volver arriba"
+        aria-label="Back to top"
+        title="Back to top"
         style={{
           position: 'fixed',
           right: 'clamp(14px, 2.2vw, 20px)',
-          bottom: 'calc(16px + env(safe-area-inset-bottom))',
+          bottom: 'calc(16px + var(--bottom-nav-clearance) + env(safe-area-inset-bottom))',
           zIndex: 12,
           width: 'clamp(44px, 4.2vw, 48px)',
           height: 'clamp(44px, 4.2vw, 48px)',

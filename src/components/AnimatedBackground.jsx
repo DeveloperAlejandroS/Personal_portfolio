@@ -4,8 +4,12 @@ export default function AnimatedBackground({ theme }) {
   const canvasRef = useRef(null);
   const animRef   = useRef(null);
   const themeRef  = useRef(theme);
+  const redrawStaticRef = useRef(null);
 
-  useEffect(() => { themeRef.current = theme; }, [theme]);
+  useEffect(() => {
+    themeRef.current = theme;
+    redrawStaticRef.current?.();
+  }, [theme]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -161,7 +165,7 @@ export default function AnimatedBackground({ theme }) {
       }
     }
 
-    function loop() {
+    function render() {
       if (targetMouse.x === null || targetMouse.y === null) {
         mouse.x = null;
         mouse.y = null;
@@ -175,8 +179,15 @@ export default function AnimatedBackground({ theme }) {
       drawGrid();
       drawConnections();
       particles.forEach((p) => { p.update(); p.draw(); });
+    }
+
+    function loop() {
+      render();
       animRef.current = requestAnimationFrame(loop);
     }
+
+    // With reduced motion, draw one static frame (and redraw it on resize/theme change) instead of animating.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     resize();
     particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
@@ -184,6 +195,7 @@ export default function AnimatedBackground({ theme }) {
     const handleResize = () => {
       resize();
       particles = Array.from({ length: PARTICLE_COUNT }, () => new Particle());
+      if (reduceMotion) render();
     };
     const handleMouseMove = (e) => {
       targetMouse.x = e.clientX;
@@ -204,9 +216,15 @@ export default function AnimatedBackground({ theme }) {
 
     handleScroll();
 
-    loop();
+    if (reduceMotion) {
+      render();
+      redrawStaticRef.current = render;
+    } else {
+      loop();
+    }
 
     return () => {
+      redrawStaticRef.current = null;
       cancelAnimationFrame(animRef.current);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);

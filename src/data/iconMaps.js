@@ -5,11 +5,11 @@ import {
   Code2,
   Globe,
   Link2,
+  Sparkles,
   Users2,
   Workflow,
   Zap,
 } from 'lucide-react';
-import { SiPython } from 'react-icons/si';
 
 export const EXPERIENCE_ICON_MAP = {
   python: { kind: 'devicon', className: 'devicon-python-plain colored' },
@@ -19,6 +19,7 @@ export const EXPERIENCE_ICON_MAP = {
   team: { kind: 'fallback', icon: Users2, color: 'var(--accent-light)' },
   workflow: { kind: 'fallback', icon: Workflow, color: 'var(--accent-mid)' },
   automation: { kind: 'fallback', icon: Zap, color: 'var(--accent-bright)' },
+  ai: { kind: 'fallback', icon: Sparkles, color: 'var(--accent-bright)' },
   default: { kind: 'fallback', icon: Code2, color: 'var(--accent-bright)' },
 };
 

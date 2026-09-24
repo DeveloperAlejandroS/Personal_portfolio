@@ -6,16 +6,19 @@
 }
 
 /* Viewport handling: prefer JS-calculated --vh to avoid mobile 100vh clipping */
+/* min-height (not height) keeps the window as the scroll container that App and AnimatedBackground listen to */
 html, body, #root {
-  height: 100vh; /* fallback for older browsers */
-  height: calc(var(--vh, 1vh) * 100); /* prefer JS-updated value when available */
+  min-height: 100vh; /* fallback for older browsers */
+  min-height: calc(var(--vh, 1vh) * 100); /* prefer JS-updated value when available */
   width: 100%;
   margin: 0;
   overflow-x: hidden;
 }
 
 /* ─── DARK THEME (default) ──────────────────────────────── */
+/* Text tokens are tuned for WCAG AA (>= 4.5:1) on both the page and glass-card backgrounds. */
 :root {
+  color-scheme: dark;
   --bg-base:        #09080f;
   --bg-base-2:      #12111c;
   --bg-card:        rgba(255, 255, 255, 0.05);
@@ -28,8 +31,10 @@ html, body, #root {
   --accent-bright:  #c084fc;
   --accent-light:   #ddd6fe;
   --accent-pale:    #f5f3ff;
+  --accent-text:    #a78bfa;
 
   --gradient-text:  linear-gradient(135deg, #c084fc, #a78bfa, #f472b6);
+  --scream-gradient: linear-gradient(90deg, #ff4d6d, #ffb703, #00d4ff, #c084fc, #ff4d6d);
   --gradient-btn:   linear-gradient(135deg, #6d28d9, #8b5cf6);
   --btn-ghost-bg:   rgba(124, 58, 237, 0.12);
   --btn-ghost-border: rgba(196, 181, 253, 0.22);
@@ -42,7 +47,7 @@ html, body, #root {
   --text-primary:   #f4efff;
   --text-secondary: #c4b5fd;
   --text-muted:     #9f9db2;
-  --text-dim:       #6f6b83;
+  --text-dim:       #948fab;
 
   --scrollbar-thumb: #8b5cf6;
   --github-icon-color: #ffffff;
@@ -65,6 +70,7 @@ html, body, #root {
 
 /* ─── LIGHT THEME ───────────────────────────────────────── */
 [data-theme="light"] {
+  color-scheme: light;
   --bg-base:        #faf7ff;
   --bg-base-2:      #f1edff;
   --bg-card:        rgba(255, 255, 255, 0.72);
@@ -74,11 +80,13 @@ html, body, #root {
 
   --accent-deep:    #6d28d9;
   --accent-mid:     #7c3aed;
-  --accent-bright:  #8b5cf6;
-  --accent-light:   #a78bfa;
+  --accent-bright:  #7c3aed;
+  --accent-light:   #6d28d9;
   --accent-pale:    #ddd6fe;
+  --accent-text:    #7c3aed;
 
-  --gradient-text:  linear-gradient(135deg, #7c3aed, #8b5cf6, #c084fc);
+  --gradient-text:  linear-gradient(135deg, #6d28d9, #7c3aed, #9333ea);
+  --scream-gradient: linear-gradient(90deg, #be123c, #b45309, #0e7490, #7c3aed, #be123c);
   --gradient-btn:   linear-gradient(135deg, #6d28d9, #8b5cf6);
   --btn-ghost-bg:   rgba(124, 58, 237, 0.08);
   --btn-ghost-border: rgba(139, 92, 246, 0.22);
@@ -90,11 +98,19 @@ html, body, #root {
 
   --text-primary:   #28114f;
   --text-secondary: #4b3f76;
-  --text-muted:     #6f6894;
-  --text-dim:       #9d96bc;
+  --text-muted:     #5b5480;
+  --text-dim:       #6b6490;
 
   --scrollbar-thumb: #8b5cf6;
   --github-icon-color: #151518;
+}
+
+/* Wider breakpoints first so the narrower ones below override them. */
+@media (max-width: 1024px) {
+  :root {
+    --project-card-width: clamp(220px, 30vw, 280px);
+    --content-max-width: 1040px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -104,13 +120,6 @@ html, body, #root {
     --page-x-padding: 16px;
     --page-top-padding: 92px;
     --page-bottom-padding: 112px;
-  }
-}
-
-@media (max-width: 1024px) {
-  :root {
-    --project-card-width: clamp(220px, 30vw, 280px);
-    --content-max-width: 1040px;
   }
 }
 
@@ -126,6 +135,19 @@ html, body, #root {
 @media (min-width: 769px) and (max-width: 1180px) {
   :root {
     --project-card-width: clamp(230px, 28vw, 292px);
+  }
+}
+
+/* Space kept free under fixed bottom UI; the navbar docks at the bottom at <=700px (Navbar.module.css) */
+:root {
+  --bottom-nav-clearance: 0px;
+  --footer-x-padding: 16px;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --bottom-nav-clearance: 96px;
+    --footer-x-padding: 64px; /* keeps footer text clear of the back-to-top button */
   }
 }
 
@@ -210,7 +232,7 @@ i[class*=" devicon-"] {
 
 .scream-gradient {
   display: inline-block;
-  background: linear-gradient(90deg, #ff4d6d, #ffb703, #00d4ff, #c084fc, #ff4d6d);
+  background: var(--scream-gradient);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -279,11 +301,6 @@ i[class*=" devicon-"] {
   animation-name: slideInLeft;
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -308,12 +325,6 @@ i[class*=" devicon-"] {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* ─── Shimmer Animation (Skeleton Loading) ─────────────── */
-@keyframes shimmer {
-  0%   { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
 }
 
 /* ─── Accessibility & Focus States ────────────────────── */
@@ -356,6 +367,11 @@ button:focus-visible,
 
 .skip-link:focus {
   transform: translateY(0);
+}
+
+/* <main> only receives focus programmatically (skip link, section changes); it isn't a control. */
+#main-content:focus {
+  outline: none;
 }
 
 /* Button hover and focus visual feedback */
@@ -444,12 +460,8 @@ button:focus-visible,
 
   .section-slide,
   .scream-gradient,
-  .lastName,
   .glass-card:hover,
-  .repo-button:hover,
-  .pill:hover,
-  .themeBtn:hover,
-  .hamburger:hover {
+  .repo-button:hover {
     transform: none !important;
   }
 }

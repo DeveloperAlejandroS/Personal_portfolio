@@ -1,28 +1,48 @@
 // sections/About.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ArrowDownToLine, Mail, MapPin, Phone } from 'lucide-react';
 import { PROFILE, EDUCATION, CERTIFICATIONS, GITHUB_USER } from '../data/portfolio';
 import { CERTIFICATION_ICON_MAP } from '../data/iconMaps';
+import SpecIcon from '../components/SpecIcon';
 
-function renderIcon(iconSpec, size) {
-  if (iconSpec?.kind === 'devicon') {
-    return <i className={iconSpec.className} aria-hidden="true" style={{ fontSize: `${size}px`, lineHeight: 1 }} />;
-  }
+const ghostButtonStyle = {
+  padding: '11px 24px',
+  background: 'var(--btn-ghost-bg)',
+  border: '1px solid var(--btn-ghost-border)',
+  borderRadius: 8,
+  color: 'var(--btn-ghost-color)',
+  fontWeight: 600,
+  textDecoration: 'none',
+  fontSize: '0.88rem',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 6,
+};
 
-  const Icon = iconSpec?.icon;
-  return Icon ? <Icon size={size} strokeWidth={2.2} /> : null;
-}
+const contactLinkStyle = {
+  color: 'inherit',
+  textDecoration: 'underline',
+  textDecorationColor: 'var(--border-hover)',
+  textUnderlineOffset: 3,
+  wordBreak: 'break-all',
+};
 
 export default function About({ githubProfile }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [phoneVisible, setPhoneVisible] = useState(false);
+  const phoneLinkRef = useRef(null);
+
   useEffect(() => {
     const h = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const avatarUrl = githubProfile?.avatar_url
-    || `https://avatars.githubusercontent.com/${GITHUB_USER}`;
+  useEffect(() => {
+    if (phoneVisible) phoneLinkRef.current?.focus();
+  }, [phoneVisible]);
+
+  const avatarUrl = `https://avatars.githubusercontent.com/${GITHUB_USER}?size=200`;
 
   return (
     <div className="section-enter" style={{
@@ -48,7 +68,9 @@ export default function About({ githubProfile }) {
             }} />
             <img
               src={avatarUrl}
-              alt="Alejandro Sierra"
+              alt={PROFILE.name}
+              width={100}
+              height={100}
               style={{
                 width: isMobile ? 80 : 100,
                 height: isMobile ? 80 : 100,
@@ -61,7 +83,7 @@ export default function About({ githubProfile }) {
             />
           </div>
           <div>
-            <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-mid)', fontSize: '0.8rem', marginBottom: 4 }}>
+            <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-text)', fontSize: '0.8rem', marginBottom: 4 }}>
               // hello world
             </p>
             <h1 style={{ fontSize: isMobile ? '2rem' : '2.8rem', fontWeight: 800, lineHeight: 1.1 }}>
@@ -86,13 +108,14 @@ export default function About({ githubProfile }) {
             <i className="devicon-github-original" aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
             <span>View GitHub</span>
           </a>
-          <a href={`mailto:${PROFILE.email}`}
-            style={{ padding: '11px 24px', background: 'var(--btn-ghost-bg)', border: '1px solid var(--btn-ghost-border)', borderRadius: 8, color: 'var(--btn-ghost-color)', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem' }}>
+          <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" style={ghostButtonStyle}>
+            <i className="devicon-linkedin-plain" aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }} />
+            <span>LinkedIn</span>
+          </a>
+          <a href={`mailto:${PROFILE.email}`} style={ghostButtonStyle}>
             Contact Me
           </a>
-          {/* CV Download */}
-          <a href="/cv-alejandro-sierra.pdf" download
-            style={{ padding: '11px 24px', background: 'var(--btn-ghost-bg)', border: '1px solid var(--btn-ghost-border)', borderRadius: 8, color: 'var(--btn-ghost-color)', fontWeight: 600, textDecoration: 'none', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <a href="/cv-alejandro-sierra.pdf" download style={ghostButtonStyle}>
             <ArrowDownToLine size={16} strokeWidth={2.3} />
             <span>Download CV</span>
           </a>
@@ -119,19 +142,30 @@ export default function About({ githubProfile }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="glass-card" style={{ padding: 22 }}>
           <Label>CONTACT</Label>
-          {[
-            { icon: Mail, value: PROFILE.email },
-            { icon: Phone, value: PROFILE.phone },
-            { icon: MapPin, value: PROFILE.location },
-          ].map(({ icon, value }) => {
-            const Icon = icon;
-            return (
-              <div key={value} style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.87rem', marginBottom: 8 }}>
-                <span style={{ display: 'inline-flex' }}><Icon size={16} strokeWidth={2.2} /></span>
-                <span style={{ wordBreak: 'break-all' }}>{value}</span>
-              </div>
-            );
-          })}
+          <ContactRow icon={<Mail size={16} strokeWidth={2.2} />}>
+            <a href={`mailto:${PROFILE.email}`} style={contactLinkStyle}>{PROFILE.email}</a>
+          </ContactRow>
+          <ContactRow icon={<Phone size={16} strokeWidth={2.2} />}>
+            {phoneVisible ? (
+              <a ref={phoneLinkRef} href={`tel:${PROFILE.phone.replace(/[^\d+]/g, '')}`} style={contactLinkStyle}>
+                {PROFILE.phone}
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setPhoneVisible(true)}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--accent-bright)', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: 3 }}
+              >
+                Show phone number
+              </button>
+            )}
+          </ContactRow>
+          <ContactRow icon={<i className="devicon-linkedin-plain" aria-hidden="true" style={{ fontSize: 16, lineHeight: 1 }} />}>
+            <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" style={contactLinkStyle}>LinkedIn profile</a>
+          </ContactRow>
+          <ContactRow icon={<MapPin size={16} strokeWidth={2.2} />}>
+            <span>{PROFILE.location}</span>
+          </ContactRow>
         </div>
 
         <div className="glass-card" style={{ padding: 22 }}>
@@ -139,7 +173,7 @@ export default function About({ githubProfile }) {
           {EDUCATION.map((e) => (
             <div key={e.school} style={{ marginBottom: 12 }}>
               <p style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.87rem' }}>{e.degree}</p>
-              <p style={{ color: 'var(--accent-mid)', fontSize: '0.78rem' }}>{e.school}</p>
+              <p style={{ color: 'var(--accent-text)', fontSize: '0.78rem' }}>{e.school}</p>
               <p style={{ color: 'var(--text-dim)', fontSize: '0.73rem' }}>{e.period}</p>
             </div>
           ))}
@@ -154,9 +188,9 @@ export default function About({ githubProfile }) {
                 return (
                   <span key={c.name} className="tag" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ display: 'inline-flex', color: certIcon.color || 'inherit' }}>
-                      {renderIcon(certIcon, 14)}
+                      <SpecIcon spec={certIcon} size={14} />
                     </span>
-                    {c.name.split(':')[0].split('(')[0].trim()}
+                    {c.shortName}
                   </span>
                 );
               })()
@@ -168,10 +202,19 @@ export default function About({ githubProfile }) {
   );
 }
 
+function ContactRow({ icon, children }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'center', color: 'var(--text-secondary)', fontSize: '0.87rem', marginBottom: 8 }}>
+      <span style={{ display: 'inline-flex' }} aria-hidden="true">{icon}</span>
+      {children}
+    </div>
+  );
+}
+
 function Label({ children }) {
   return (
-    <h3 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 14 }}>
+    <h2 style={{ color: 'var(--accent-bright)', fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.1em', marginBottom: 14 }}>
       {children}
-    </h3>
+    </h2>
   );
 }

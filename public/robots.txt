@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://alejandro-sierra-dev.vercel.app/sitemap.xml
