@@ -59,6 +59,18 @@ export const EXPERIENCE = [
     ],
     tags: ["Python", "Power BI", "Excel", "Data Analysis", "KPIs", "Process Automation"],
   },
+  {
+    title: "Junior Developer",
+    company: "Quark.i By Legalnova",
+    period: "Sep 2026 – Present",
+    bullets: [
+      {
+        iconKey: "python",
+        text: ""
+      },
+    ],
+    tags: ["Python", "JavaScript", "Power Automate", "Web Development", "Automation Development", "Process Automation"],
+  },
 ];
 
 export const CERTIFICATIONS = [
