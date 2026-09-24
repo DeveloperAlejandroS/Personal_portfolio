@@ -36,6 +36,30 @@ export const EDUCATION = [
 
 export const EXPERIENCE = [
   {
+    title: "Junior Developer",
+    company: "Quark.i By Legalnova",
+    period: "Jul 2026 – Present",
+    bullets: [
+      {
+        iconKey: "javascript",
+        text: "Built and maintain a suite of Google Apps Script market-intelligence agents that research four business areas (Smart Tech, Experience Design, Business Model Strategy, and Comms) and consolidate findings into a weekly strategic briefing."
+      },
+      {
+        iconKey: "python",
+        text: "Integrated the Gemini API into the agent pipeline to automate research analysis and generate structured, consolidated reports without manual intervention."
+      },
+      {
+        iconKey: "workflow",
+        text: "Designed the end-to-end workflow, from raw research retrieval and Drive storage to the automated generation of the final Google Docs report, improving turnaround time for market-intelligence deliverables."
+      },
+      {
+        iconKey: "automation",
+        text: "Developed internal automation tools with Power Automate and JavaScript to streamline recurring business processes across the company."
+      },
+    ],
+    tags: ["Python", "JavaScript", "Google Apps Script", "Power Automate", "Automation Development", "Process Automation"],
+  },
+  {
     title: "Marketing Data Analyst Intern",
     company: "Colombia ESL / Open English",
     period: "Sep 2024 – Sep 2025",
@@ -58,18 +82,6 @@ export const EXPERIENCE = [
       },
     ],
     tags: ["Python", "Power BI", "Excel", "Data Analysis", "KPIs", "Process Automation"],
-  },
-  {
-    title: "Junior Developer",
-    company: "Quark.i By Legalnova",
-    period: "Sep 2026 – Present",
-    bullets: [
-      {
-        iconKey: "python",
-        text: ""
-      },
-    ],
-    tags: ["Python", "JavaScript", "Power Automate", "Web Development", "Automation Development", "Process Automation"],
   },
 ];
 

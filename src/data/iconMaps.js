@@ -6,14 +6,19 @@ import {
   Globe,
   Link2,
   Users2,
+  Workflow,
+  Zap,
 } from 'lucide-react';
 import { SiPython } from 'react-icons/si';
 
 export const EXPERIENCE_ICON_MAP = {
   python: { kind: 'devicon', className: 'devicon-python-plain colored' },
+  javascript: { kind: 'devicon', className: 'devicon-javascript-plain colored' },
   analytics: { kind: 'fallback', icon: ChartColumnIncreasing, color: 'var(--accent-mid)' },
   excel: { kind: 'fallback', icon: ClipboardList, color: 'var(--accent-bright)' },
   team: { kind: 'fallback', icon: Users2, color: 'var(--accent-light)' },
+  workflow: { kind: 'fallback', icon: Workflow, color: 'var(--accent-mid)' },
+  automation: { kind: 'fallback', icon: Zap, color: 'var(--accent-bright)' },
   default: { kind: 'fallback', icon: Code2, color: 'var(--accent-bright)' },
 };
 
